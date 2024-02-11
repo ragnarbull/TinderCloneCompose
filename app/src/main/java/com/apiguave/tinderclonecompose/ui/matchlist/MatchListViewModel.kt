@@ -20,12 +20,11 @@ class MatchListViewModel(private val matchRepository: MatchRepository): ViewMode
             try {
                 val matchList = matchRepository.getMatches()
                 _uiState.update { it.copy(isLoading = false, matchList = matchList) }
-            }catch (e: Exception){
+            } catch (e: Exception){
                 _uiState.update { it.copy(isLoading = false, errorMessage = e.message) }
             }
         }
     }
-
 
 }
 data class MatchListUiState(val isLoading: Boolean, val matchList: List<Match>, val errorMessage: String?)

@@ -24,6 +24,7 @@ import com.apiguave.tinderclonecompose.domain.match.entity.Match
 import com.apiguave.tinderclonecompose.domain.message.entity.Message
 import com.apiguave.tinderclonecompose.extensions.withLinearGradient
 import com.apiguave.tinderclonecompose.ui.components.ChatFooter
+import com.apiguave.tinderclonecompose.ui.components.LoadingView
 import com.apiguave.tinderclonecompose.ui.theme.AntiFlashWhite
 import com.apiguave.tinderclonecompose.ui.theme.Orange
 import com.apiguave.tinderclonecompose.ui.theme.Pink
@@ -31,10 +32,13 @@ import com.apiguave.tinderclonecompose.ui.theme.UltramarineBlue
 
 @Composable
 fun ChatView(
+    uiState: ChatViewUiState,
     match: Match,
+    messages: List<Message>,
     onArrowBackPressed: () -> Unit,
     sendMessage: (String) -> Unit,
-    messages: List<Message>
+    likeMessage: (String) -> Unit,
+    unLikeMessage: (String) -> Unit
 ) {
 
     Scaffold(
@@ -62,11 +66,19 @@ fun ChatView(
                     text = stringResource(id = R.string.you_matched_with_on, match.userName, match.formattedDate).uppercase())
             }
             items(messages.size){ index ->
-                MessageItem(match = match,message = messages[index])
+                MessageItem(
+                    match = match,
+                    message = messages[index],
+                    onLikeClicked = { likeMessage(messages[index].id) },
+                    onUnLikeClicked = { unLikeMessage(messages[index].id) }
+                )
             }
         }
     }
 
+    if(uiState.isLoading){
+        LoadingView()
+    }
 }
 
 @Composable
@@ -104,16 +116,20 @@ fun ChatAppBar(match: Match, onArrowBackPressed: () -> Unit){
 }
 
 @Composable
-fun MessageItem(match: Match, message: Message) {
+fun MessageItem(
+    match: Match,
+    message: Message,
+    onLikeClicked: () -> Unit,
+    onUnLikeClicked: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 4.dp),
-        horizontalArrangement = if(message.isFromSender) Arrangement.End else Arrangement.Start) {
+        horizontalArrangement = if(message.isFromSender) Arrangement.End else Arrangement.Start
+    ) {
 
-        if(message.isFromSender){
-            Spacer(Modifier.fillMaxWidth(.25f))
-        } else {
+        if (!message.isFromSender) {
             AsyncImage(
                 model = match.userPicture,
                 contentScale = ContentScale.Crop,
@@ -123,28 +139,69 @@ fun MessageItem(match: Match, message: Message) {
                     .size(40.dp)
                     .clip(CircleShape)
             )
-        }
-
-        Text(
-            modifier = Modifier
-                .background(
-                    if (message.isFromSender) UltramarineBlue else AntiFlashWhite,
-                    RoundedCornerShape(4.dp)
+            Text(
+                modifier = Modifier
+                    .background(
+                        AntiFlashWhite,
+                        RoundedCornerShape(4.dp)
+                    )
+                    .padding(6.dp)
+                    .weight(4f, false)
+                ,
+                text = message.text,
+                color = Color.Black,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            if (!message.liked) {
+                // Display the like button only for the recipient's messages
+                // Ensure a message can only be liked if it is not already liked
+                IconButton(
+                    onClick = onLikeClicked,
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_heart_broken_24),
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+            } else {
+                // Display the unlike button only for the recipient's messages
+                // Ensure a message can only be unliked if it is not already unliked
+                IconButton(
+                    onClick = onUnLikeClicked,
+                    modifier = Modifier.padding(end = 8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_heart_broken_24),
+                        contentDescription = null,
+                        tint = Color.Red
+                    )
+                }
+            }
+        } else {
+            if (message.liked) {
+                // Show the icon at the far left if the user has liked the sender's message
+                Icon(
+                    modifier = Modifier.padding(end = 8.dp),
+                    painter = painterResource(id = R.drawable.baseline_heart_broken_24),
+                    contentDescription = null,
+                    tint = Color.Red
                 )
-                .padding(6.dp)
-                .weight(4f, false)
-            ,
-            text = message.text,
-            color = if(message.isFromSender) Color.White else Color.Black,
-        )
-
-        if(!message.isFromSender){
-            Spacer(
-                Modifier
-                    .height(4.dp)
-                    .weight(1f, false)
-                    .background(Color.Red))
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Text(
+                modifier = Modifier
+                    .background(
+                        UltramarineBlue,
+                        RoundedCornerShape(4.dp)
+                    )
+                    .padding(6.dp)
+                    .weight(4f, false)
+                ,
+                text = message.text,
+                color = Color.White,
+            )
         }
-
     }
 }

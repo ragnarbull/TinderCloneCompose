@@ -34,11 +34,11 @@ fun EditProfileView(
 
     var showErrorDialog by remember { mutableStateOf(false) }
     var showDeleteConfirmationDialog by remember { mutableStateOf(false) }
-    var deleteConfirmationPictureIndex by remember { mutableStateOf(-1) }
+    var deleteConfirmationPictureIndex by remember { mutableIntStateOf(-1) }
 
     var bioText by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue(uiState.currentProfile.bio)) }
-    var selectedGenderIndex by rememberSaveable { mutableStateOf(uiState.currentProfile.genderIndex) }
-    var selectedOrientationIndex by rememberSaveable { mutableStateOf(uiState.currentProfile.orientationIndex) }
+    var selectedGenderIndex by rememberSaveable { mutableIntStateOf(uiState.currentProfile.genderIndex) }
+    var selectedOrientationIndex by rememberSaveable { mutableIntStateOf(uiState.currentProfile.orientationIndex) }
 
     LaunchedEffect(key1 = Unit, block = {
         action.collect {
@@ -88,7 +88,7 @@ fun EditProfileView(
                 TextButton(onClick = {
                     updateProfile(uiState.currentProfile, bioText.text, selectedGenderIndex, selectedOrientationIndex, uiState.pictures)
                 }) {
-                    Text(text = stringResource(id = R.string.done))
+                    Text(text = stringResource(id = R.string.save))
                 }
             }
         }){ padding ->
@@ -112,10 +112,10 @@ fun EditProfileView(
                 SectionTitle(title = stringResource(id = R.string.about_me))
                 FormTextField(
                     value = bioText,
-                    placeholder = stringResource(id = R.string.write_something_interesting),
-                    onValueChange = {
-                        bioText = it
-                    })
+                    placeholder = stringResource(id = R.string.write_something_interesting)
+                ) {
+                    bioText = it
+                }
 
                 SectionTitle(title = stringResource(id = R.string.gender))
                 HorizontalPicker(

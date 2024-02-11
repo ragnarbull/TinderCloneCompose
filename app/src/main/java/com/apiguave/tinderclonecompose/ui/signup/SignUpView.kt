@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.apiguave.tinderclonecompose.R
 import com.apiguave.tinderclonecompose.domain.profile.entity.CreateUserProfile
 import com.apiguave.tinderclonecompose.domain.profile.entity.Orientation
+import com.apiguave.tinderclonecompose.domain.profile.entity.UserLocation
 import com.apiguave.tinderclonecompose.extensions.isValidUsername
 import com.apiguave.tinderclonecompose.ui.components.*
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -75,8 +76,23 @@ fun SignUpView(
         onResult = {activityResult ->
             //Transforms the Uris to Bitmaps
             val isMale = selectedGenderIndex == 0
-            val orientation = Orientation.values()[selectedOrientationIndex]
-            val profile = CreateUserProfile(nameText.text, birthdate, bioText.text, isMale, orientation, uiState.pictures.map { it.bitmap })
+            val location = UserLocation(44.6553, -110.6702) // Yellowstone
+            val orientation = Orientation.entries[selectedOrientationIndex]
+            val maxDistance = 5 // km
+            val minAge = 18 //
+            val maxAge = 35
+            val profile = CreateUserProfile(
+                nameText.text,
+                birthdate,
+                bioText.text,
+                isMale,
+                location,
+                orientation,
+                maxDistance,
+                minAge,
+                maxAge,
+                uiState.pictures.map { it.bitmap },
+                )
             //Signs up with the information provided
             signUp(activityResult.data, profile)
         }
@@ -140,11 +156,10 @@ fun SignUpView(
                     SectionTitle(title = stringResource(id = R.string.personal_information))
                     FormTextField(
                         value = nameText,
-                        placeholder = stringResource(id = R.string.enter_your_name) ,
-                        onValueChange = { newText ->
-                            nameText = newText
-                        }
-                    )
+                        placeholder = stringResource(id = R.string.enter_your_name)
+                    ) { newText ->
+                        nameText = newText
+                    }
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -178,9 +193,8 @@ fun SignUpView(
                     FormTextField(
                         modifier = Modifier.height(128.dp),
                         value = bioText,
-                        placeholder = stringResource(id = R.string.write_something_interesting),
-                        onValueChange = { bioText = it }
-                    )
+                        placeholder = stringResource(id = R.string.write_something_interesting)
+                    ) { bioText = it }
 
                     SectionTitle(title = stringResource(id = R.string.gender))
                     HorizontalPicker(

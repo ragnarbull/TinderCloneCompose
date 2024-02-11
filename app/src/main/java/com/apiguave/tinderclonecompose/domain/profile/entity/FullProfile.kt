@@ -1,8 +1,8 @@
-package com.apiguave.tinderclonecompose.domain.profilecard.entity
+package com.apiguave.tinderclonecompose.domain.profile.entity
 
 import android.net.Uri
 
-class Profile(
+class FullProfile(
     val id: String,
     val name: String,
     val age: Int,

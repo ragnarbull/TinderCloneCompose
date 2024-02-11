@@ -11,6 +11,7 @@ data class FirestoreMatch(
     val timestamp: Timestamp? = null,
     val lastMessage: String?=null
 )
+
 object FirestoreMatchProperties{
     const val usersMatched = "usersMatched"
     const val timestamp = "timestamp"

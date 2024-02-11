@@ -1,20 +1,23 @@
 package com.apiguave.tinderclonecompose.data.datasource
 
 import android.content.Intent
+import android.util.Log
 import com.apiguave.tinderclonecompose.data.datasource.exception.AuthException
 import com.apiguave.tinderclonecompose.extensions.getTaskResult
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FirebaseFirestoreException
 
 class AuthRemoteDataSource {
-
     val isUserSignedIn: Boolean
         get() = FirebaseAuth.getInstance().currentUser != null
 
     val userId: String
         get() = FirebaseAuth.getInstance().currentUser?.uid ?: throw AuthException("User not logged in")
+
+    val TAG = "AuthDataRemoteSource"
 
     suspend fun signInWithGoogle(data: Intent?, signInCheck: SignInCheck = SignInCheck.ALL_USERS): FirebaseUser {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data ?: throw AuthException("No intent data found"))
@@ -24,14 +27,22 @@ class AuthRemoteDataSource {
             val email = account.email ?: throw AuthException("No email found")
             //It throws an exception if the user already exists
             val isNewUser = isNewUser(email)
-            if (isNewUser && signInCheck == SignInCheck.ENFORCE_EXISTING_USER) throw AuthException("User doesn't exist")
+            if (isNewUser && signInCheck == SignInCheck.ENFORCE_EXISTING_USER) {
+                println("Logging user in...")
+            }
             else if (!isNewUser && signInCheck == SignInCheck.ENFORCE_NEW_USER) throw AuthException("User already exists")
         }
 
         val idToken = account.idToken ?: throw AuthException("No id token found")
         val credential = GoogleAuthProvider.getCredential(idToken, null)
-        val authResult  = FirebaseAuth.getInstance().signInWithCredential(credential).getTaskResult()
-        return authResult?.user ?: throw AuthException("User is empty")
+
+        try {
+            val authResult  = FirebaseAuth.getInstance().signInWithCredential(credential).getTaskResult()
+            return authResult?.user ?: throw AuthException("User is empty")
+        } catch (e: FirebaseFirestoreException) {
+            Log.e(TAG, "Firestore Exception: ", e)
+            throw AuthException("FirebaseFirestoreException occurred")
+        }
     }
 
     fun signOut(){

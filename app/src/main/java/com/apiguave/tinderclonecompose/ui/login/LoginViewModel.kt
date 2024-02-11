@@ -1,5 +1,7 @@
 package com.apiguave.tinderclonecompose.ui.login
 
+import android.util.Log
+import android.util.Log.getStackTraceString
 import androidx.activity.result.ActivityResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,6 +13,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(private val authRepository: AuthRepository): ViewModel() {
+
+    companion object {
+        private const val TAG = "LoginViewModel"
+    }
+
     private val _uiState = MutableStateFlow(
         LoginViewState(
             isLoading = true,
@@ -38,9 +45,12 @@ class LoginViewModel(private val authRepository: AuthRepository): ViewModel() {
         _uiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             try {
+                Log.d(TAG, "Attempting sign-in...")
                 authRepository.signInWithGoogle(activityResult.data, signInCheck = SignInCheck.ENFORCE_EXISTING_USER)
+                Log.d(TAG, "Sign-in successful")
                 _uiState.update { it.copy(isUserSignedIn = true) }
             } catch (e: Exception) {
+                Log.e(TAG, "Sign-in failed: ${e.message}\n${getStackTraceString(e)}")
                 if(authRepository.isUserSignedIn){
                     authRepository.signOut()
                 }

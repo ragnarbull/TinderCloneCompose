@@ -1,5 +1,6 @@
 package com.apiguave.tinderclonecompose.ui.newmatch
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apiguave.tinderclonecompose.domain.message.MessageRepository
@@ -24,6 +25,7 @@ class NewMatchViewModel(private val messageRepository: MessageRepository): ViewM
     }
 
     fun setMatch(match: NewMatch){
+        Log.d("NewMatchViewModel", "match: $match")
         _match.value = match
     }
 }

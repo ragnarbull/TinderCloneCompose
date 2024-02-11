@@ -9,19 +9,20 @@ import com.apiguave.tinderclonecompose.domain.match.MatchRepository
 import com.apiguave.tinderclonecompose.domain.message.MessageRepository
 import com.apiguave.tinderclonecompose.domain.profile.ProfileRepository
 import com.apiguave.tinderclonecompose.domain.profilecard.ProfileCardRepository
+import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
 val dataModule = module {
 
     //Data sources
     single { AuthRemoteDataSource() }
-    single { FirestoreRemoteDataSource() }
-    single { StorageRemoteDataSource() }
+    single { FirestoreRemoteDataSource(androidApplication()) }
+    single { StorageRemoteDataSource(androidApplication()) }
 
     //Repositories
     single<AuthRepository> { AuthRepositoryImpl(get()) }
     single<MatchRepository> { MatchRepositoryImpl(get(),get(),get()) }
-    single<MessageRepository> { MessageRepositoryImpl(get()) }
+    single<MessageRepository> { MessageRepositoryImpl(get(),get(),get()) }
     single<ProfileCardRepository> { ProfileCardRepositoryImpl(get(), get()) }
     single<ProfileRepository> { ProfileRepositoryImpl(get(),get(),get()) }
 }

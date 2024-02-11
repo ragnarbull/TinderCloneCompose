@@ -1,5 +1,6 @@
 package com.apiguave.tinderclonecompose.data.datasource
 
+import android.app.Application
 import android.graphics.Bitmap
 import com.apiguave.tinderclonecompose.domain.profile.entity.DevicePicture
 import com.apiguave.tinderclonecompose.domain.profile.entity.FirebasePicture
@@ -12,9 +13,11 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import java.util.*
 
-class StorageRemoteDataSource {
+class StorageRemoteDataSource(
+    private val appContext: Application
+) {
     companion object{
-        private const val USERS = "users"
+        const val USERS = "users"
     }
 
     suspend fun updateProfilePictures(userId: String, outdatedPictures: List<FirebasePicture>, updatedPictures: List<UserPicture>): List<FirebasePicture>{

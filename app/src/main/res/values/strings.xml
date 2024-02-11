@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">TinderCloneCompose</string>
+    <string name="default_web_client_id" translatable="false">29136479767-ae3uqf0pb56kuqhn6cihpljco0lh456e.apps.googleusercontent.com</string>
     <string name="send">Send</string>
     <string name="sign_in_with_google">Sign In with Google</string>
     <string name="create_account">Create account</string>
@@ -37,6 +38,9 @@
     <string name="no_match_value_passed">No match value passed</string>
     <string name="its_a">It\'s a</string>
     <string name="match">match!</string>
-    <string name="done">Done</string>
+    <string name="save" translatable="false">Save</string>
+    <string name="discovery_settings" translatable="false">Discovery Settings</string>
+    <string name="max_distance" translatable="false">Maximum distance</string>
+    <string name="age_range" translatable="false">Age range</string>
 
 </resources>

@@ -1,13 +1,17 @@
 package com.apiguave.tinderclonecompose.data.repository
 
+import android.net.Uri
 import com.apiguave.tinderclonecompose.data.datasource.AuthRemoteDataSource
 import com.apiguave.tinderclonecompose.data.datasource.FirestoreRemoteDataSource
 import com.apiguave.tinderclonecompose.data.datasource.StorageRemoteDataSource
 import com.apiguave.tinderclonecompose.data.datasource.model.FirestoreUserProperties
+import com.apiguave.tinderclonecompose.domain.discoverysettingscard.entity.CurrentDiscoverySettings
 import com.apiguave.tinderclonecompose.domain.profile.ProfileRepository
 import com.apiguave.tinderclonecompose.domain.profile.entity.CreateUserProfile
 import com.apiguave.tinderclonecompose.domain.profilecard.entity.CurrentProfile
 import com.apiguave.tinderclonecompose.domain.profile.entity.FirebasePicture
+import com.apiguave.tinderclonecompose.domain.profile.entity.FullProfile
+import com.apiguave.tinderclonecompose.domain.profile.entity.UserLocation
 import com.apiguave.tinderclonecompose.domain.profile.entity.UserPicture
 
 class ProfileRepositoryImpl(
@@ -28,17 +32,22 @@ class ProfileRepositoryImpl(
             profile.birthdate,
             profile.bio,
             profile.isMale,
+            profile.location,
             profile.orientation,
+            profile.maxDistance,
+            profile.minAge,
+            profile.maxAge,
             filenames.map { it.filename }
         )
     }
 
     override suspend fun updateProfile(
         currentProfile: CurrentProfile,
-        newBio: String, newGenderIndex: Int,
+        newBio: String,
+        newGenderIndex: Int,
         newOrientationIndex: Int,
         newPictures: List<UserPicture>
-    ): CurrentProfile {
+        ): CurrentProfile {
 
         val arePicturesEqual = currentProfile.pictures == newPictures
         val isDataEqual = currentProfile.isDataEqual(newBio, newGenderIndex, newOrientationIndex)
@@ -100,4 +109,54 @@ class ProfileRepositoryImpl(
         return filenames
     }
 
+    override suspend fun getSavedDiscoverySettings(): CurrentDiscoverySettings {
+        return firestoreDataSource.getSavedDiscoverySettings()
+    }
+
+    override suspend fun updateDiscoverySettings(
+        currentDiscoverySettings: CurrentDiscoverySettings,
+        newMaxDistance: Int,
+        newMinAge: Int,
+        newMaxAge: Int
+    ): CurrentDiscoverySettings {
+
+        val isDataEqual = currentDiscoverySettings.isDataEqual(newMaxDistance, newMinAge, newMaxAge)
+
+        return if (isDataEqual) {
+            currentDiscoverySettings
+        } else {
+            val data = currentDiscoverySettings.toModifiedData(newMaxDistance, newMinAge, newMaxAge)
+            firestoreDataSource.updateProfileData(data)
+            currentDiscoverySettings.toModifiedDiscoverySettings(
+                newMaxDistance,
+                newMinAge,
+                newMaxAge
+            )
+        }
+    }
+
+    override suspend fun getSavedUserLocation(): UserLocation {
+        return firestoreDataSource.getSavedLocation()
+    }
+
+    override suspend fun updateUserLocation(
+        previousUserLocation: UserLocation,
+        newUserLocation: UserLocation
+    ): UserLocation {
+
+        val data = mutableMapOf<String, Any>()
+        data[FirestoreUserProperties.location] = newUserLocation
+        firestoreDataSource.updateProfileData(data)
+        return newUserLocation
+    }
+
+    override suspend fun fetchCurrentUserProfilePic(): Uri {
+        val user = firestoreDataSource.fetchCurrentUser()
+        val picture = storageDataSource.getPictureFromUser(user.id, user.pictures.first())
+        return picture.uri
+    }
+
+    override suspend fun getUserProfileById(userId: String): FullProfile {
+        return firestoreDataSource.getUserProfileById(userId)
+    }
 }

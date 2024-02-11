@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import com.apiguave.tinderclonecompose.R
 import com.apiguave.tinderclonecompose.extensions.conditional
 import com.apiguave.tinderclonecompose.extensions.withLinearGradient
@@ -34,6 +34,7 @@ fun LoadingView() {
 }
 
 @Composable
+@Preview
 fun AnimatedGradientLogo(modifier: Modifier = Modifier){
     val infiniteTransition = rememberInfiniteTransition()
     val animatedLogoScale by infiniteTransition.animateFloat(
@@ -42,7 +43,7 @@ fun AnimatedGradientLogo(modifier: Modifier = Modifier){
         animationSpec = infiniteRepeatable(
             animation = tween(1000),
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = "AnimatedGradientLogo"
     )
 
     Image(
@@ -60,7 +61,8 @@ fun AnimatedLogo(modifier: Modifier = Modifier, isAnimating: Boolean){
     val animatedLogoScale by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 1.25f,
-        animationSpec = infiniteRepeatable(animation = tween(1000), repeatMode = RepeatMode.Reverse)
+        animationSpec = infiniteRepeatable(animation = tween(1000), repeatMode = RepeatMode.Reverse),
+        label = "AnimatedLogo"
     )
     Image(
         painter = painterResource(id = R.drawable.tinder_logo),

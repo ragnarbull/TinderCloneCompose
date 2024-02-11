@@ -1,21 +1,30 @@
 package com.apiguave.tinderclonecompose.ui.main
 
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import org.koin.androidx.compose.getViewModel
 import androidx.navigation.*
-import com.apiguave.tinderclonecompose.R
-import com.apiguave.tinderclonecompose.ui.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import com.apiguave.tinderclonecompose.domain.discoverysettingscard.entity.CurrentDiscoverySettings
+import com.apiguave.tinderclonecompose.domain.match.entity.Match
 import com.apiguave.tinderclonecompose.ui.chat.ChatView
 import com.apiguave.tinderclonecompose.ui.chat.ChatViewModel
 import com.apiguave.tinderclonecompose.ui.components.AddPictureView
+import com.apiguave.tinderclonecompose.ui.components.LoadingView
+import com.apiguave.tinderclonecompose.ui.discoverysettings.DiscoverySettingsView
+import com.apiguave.tinderclonecompose.ui.discoverysettings.DiscoverySettingsViewModel
 import com.apiguave.tinderclonecompose.ui.editprofile.EditProfileView
 import com.apiguave.tinderclonecompose.ui.editprofile.EditProfileViewModel
 import com.apiguave.tinderclonecompose.ui.home.HomeView
@@ -29,23 +38,28 @@ import com.apiguave.tinderclonecompose.ui.newmatch.NewMatchViewModel
 import com.apiguave.tinderclonecompose.ui.signup.SignUpView
 import com.apiguave.tinderclonecompose.ui.signup.SignUpViewModel
 import com.apiguave.tinderclonecompose.ui.theme.TinderCloneComposeTheme
-import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.apiguave.tinderclonecompose.ui.viewuserprofile.ViewUserProfileView
+import com.apiguave.tinderclonecompose.ui.viewuserprofile.ViewUserProfileViewModel
 import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainContent(signInClient: GoogleSignInClient){
-    TinderCloneComposeTheme {
-        val navController = rememberAnimatedNavController()
+    val TAG = "MainContent"
 
+    TinderCloneComposeTheme {
+        val navController = rememberNavController()
+
+        val homeViewModel: HomeViewModel = getViewModel()
+        val viewUserProfileViewModel: ViewUserProfileViewModel = getViewModel()
         val chatViewModel: ChatViewModel = getViewModel()
         val newMatchViewModel: NewMatchViewModel = getViewModel()
+        val discoverySettingsViewModel: DiscoverySettingsViewModel = getViewModel()
         val editProfileViewModel: EditProfileViewModel = getViewModel()
         val signUpViewModel: SignUpViewModel = getViewModel()
-        AnimatedNavHost(navController = navController, startDestination = Routes.Login) {
+        NavHost(navController = navController, startDestination = Routes.Login) {
 
             animatedComposable(Routes.Login) {
                 val loginViewModel: LoginViewModel = koinViewModel()
@@ -106,10 +120,14 @@ fun MainContent(signInClient: GoogleSignInClient){
             }
 
             animatedComposable(Routes.Home, animationType = AnimationType.HOME) {
-                val homeViewModel: HomeViewModel = koinViewModel()
-                val uiState by homeViewModel.uiState.collectAsState()
+                val viewModel: HomeViewModel = koinViewModel()
+                val uiState by viewModel.uiState.collectAsState()
+
                 HomeView(
                     uiState = uiState,
+                    navigateToDiscoverySettings = {
+                        navController.navigate(Routes.DiscoverySettings)
+                    },
                     navigateToEditProfile = {
                         navController.navigate(Routes.EditProfile)
                     },
@@ -119,16 +137,33 @@ fun MainContent(signInClient: GoogleSignInClient){
                     navigateToNewMatch = {
                         navController.navigate(Routes.NewMatch)
                     },
-                    setLoading = homeViewModel::setLoading,
-                    removeLastProfile = homeViewModel::removeLastProfile,
-                    fetchProfiles = homeViewModel::fetchProfiles,
-                    swipeUser = homeViewModel::swipeUser,
-                    createProfiles = homeViewModel::createProfiles,
+                    navigateToViewUserProfile = {
+                        navController.navigate(Routes.ViewUserProfile)
+                    },
+                    removeLastProfile = viewModel::removeLastProfile,
+                    getLastKnownLocationAndFetchProfiles = viewModel::getLastKnownLocationAndFetchProfiles,
+                    swipeUserAction = viewModel::swipeUserAction,
                     setMatch = newMatchViewModel::setMatch,
                     setCurrentProfile = editProfileViewModel::setCurrentProfile,
-                    newMatch = homeViewModel.newMatch,
-                    currentProfile = homeViewModel.currentProfile
+                    newMatch = viewModel.newMatch,
+                    currentProfile = viewModel.currentProfile,
+                    undoSwipe = viewModel::undoSwipe,
+                    setUserProfile = viewUserProfileViewModel::setUserProfile,
+                    clearLastRemovedProfile = viewModel::clearLastRemovedProfile,
+                    superLike = viewModel::superLike,
+                    boost = viewModel::boost
                 )
+            }
+
+            animatedComposable(Routes.ViewUserProfile){
+                val userProfile by viewUserProfileViewModel.userProfile.collectAsState()
+
+                userProfile?.let { it1 ->
+                    ViewUserProfileView(
+                        userProfile = it1,
+                        onArrowBackPressed =  navController::popBackStack,
+                    )
+                }
             }
 
             animatedComposable(Routes.NewMatch, animationType = AnimationType.FADE){
@@ -150,8 +185,7 @@ fun MainContent(signInClient: GoogleSignInClient){
                     addPicture = {
                         navController.navigate(Routes.getAddPictureRoute(Routes.EditProfile))
                     },
-                    onProfileEdited = navController::popBackStack
-                    ,
+                    onProfileEdited = navController::popBackStack,
                     onSignedOut = {
                         navController.navigate(Routes.Login){
                             popUpTo(Routes.Home){
@@ -166,33 +200,89 @@ fun MainContent(signInClient: GoogleSignInClient){
                 )
             }
 
+            animatedComposable(Routes.DiscoverySettings){
+                val viewModel: DiscoverySettingsViewModel = koinViewModel()
+                val uiState by viewModel.uiState.collectAsState()
+
+                var discoverySettings by remember { mutableStateOf<CurrentDiscoverySettings?>(null) }
+
+                LaunchedEffect(Unit) {
+                    if (discoverySettings == null) {
+                        discoverySettings = viewModel.getDiscoverySettings()
+                        viewModel.setCurrentDiscoverySettings(discoverySettings!!)
+                    }
+                }
+
+                discoverySettings?.let {
+                    DiscoverySettingsView(
+                        uiState = uiState,
+                        navigateToHomeView = {
+                            navController.navigate(Routes.Home)
+                        },
+                        updateDiscoverySettings = discoverySettingsViewModel::updateDiscoverySettings,
+                        action = discoverySettingsViewModel.action
+                    )
+                } ?: run {
+                    if (discoverySettings == null) LoadingView()
+                    else {
+                        Text(
+                            modifier = Modifier.fillMaxSize(),
+                            textAlign = TextAlign.Center,
+                            text = "Invalid discovery settings"
+                        )
+                    }
+                }
+            }
+
             animatedComposable(Routes.MatchList){
                 val viewModel: MatchListViewModel = koinViewModel()
                 val uiState by viewModel.uiState.collectAsState()
+
                 MatchListView(
                     uiState = uiState,
-                    navigateToMatch = {
-                        chatViewModel.setMatch(it)
-                        navController.navigate(Routes.Chat)
+                    navigateToMatch = { match ->
+                        val matchId = match.id
+                        navController.navigate("${Routes.Chat}/$matchId")
                     },
                     onArrowBackPressed =  navController::popBackStack,
                     fetchMatches = viewModel::fetchMatches
                 )
             }
 
-            animatedComposable(Routes.Chat){
+            animatedComposable("${Routes.Chat}/{matchId}") { backStackEntry ->
                 val viewModel: ChatViewModel = koinViewModel()
-                val chatMatch by viewModel.match.collectAsState()
-                chatMatch?.let {
-                    val messages by viewModel.getMessages(it.id).collectAsState(initial = listOf())
+                val uiState by viewModel.uiState.collectAsState()
+                val matchId = backStackEntry.arguments?.getString("matchId")
+                var chatMatch by remember { mutableStateOf<Match?>(null) }
+
+                LaunchedEffect(matchId) {
+                    matchId?.let { id ->
+                        chatMatch = viewModel.getMatchById(id)
+                    }
+                }
+
+                chatMatch?.let { match ->
+                    viewModel.setMatch(match)
+                    val messages by viewModel.getMessages(match.id).collectAsState(initial = listOf())
+                    Log.d(TAG, "messages: $messages")
                     ChatView(
-                        match = it,
+                        uiState = uiState,
+                        match = match,
                         messages = messages,
                         onArrowBackPressed = navController::popBackStack,
                         sendMessage = viewModel::sendMessage,
+                        likeMessage = viewModel::likeMessage,
+                        unLikeMessage = viewModel::unLikeMessage
                     )
-                }  ?: run{
-                    Text(modifier = Modifier.fillMaxSize(), textAlign = TextAlign.Center, text = stringResource(id = R.string.no_match_value_passed))
+                } ?: run {
+                    if (matchId != null) LoadingView()
+                    else {
+                        Text(
+                            modifier = Modifier.fillMaxSize(),
+                            textAlign = TextAlign.Center,
+                            text = "Invalid matchId"
+                        )
+                    }
                 }
             }
         }

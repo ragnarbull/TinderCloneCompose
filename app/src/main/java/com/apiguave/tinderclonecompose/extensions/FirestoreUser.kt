@@ -7,7 +7,7 @@ import com.apiguave.tinderclonecompose.domain.profilecard.entity.Profile
 import com.apiguave.tinderclonecompose.domain.profile.entity.FirebasePicture
 
 fun FirestoreUser.toProfile(uris: List<Uri>): Profile {
-    return Profile(this.id, this.name, this.birthDate?.toAge() ?: 99, uris)
+    return Profile(this.id, this.name, this.birthDate?.toAge() ?: 99, uris, this.bio)
 }
 
 fun FirestoreUser.toCurrentProfile(uris: List<FirebasePicture>): CurrentProfile {

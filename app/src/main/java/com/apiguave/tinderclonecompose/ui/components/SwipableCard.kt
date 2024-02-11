@@ -1,5 +1,6 @@
 package com.apiguave.tinderclonecompose.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -16,13 +17,14 @@ import kotlin.math.abs
  * @param state The current state of the swipeable card. Use [rememberSwipeableCardState] to create.
  * @param onSwiped will be called once a swipe gesture is completed. The given [SwipingDirection] will indicate which side the gesture was performed on.
  * @param onSwipeCancel will be called when the gesture is stopped before reaching the minimum threshold to be treated as a full swipe
- * @param blockedDirections the directions which will not trigger a swipe. By default only horizontal swipes are allowed.
+ * @param blockedDirections the directions which will not trigger a swipe.
  */
+@SuppressLint("ModifierFactoryUnreferencedReceiver")
 fun Modifier.swipableCard(
     state: SwipeableCardState,
     onSwiped: (SwipingDirection) -> Unit,
     onSwipeCancel: () -> Unit = {},
-    blockedDirections: List<SwipingDirection> = listOf(SwipingDirection.Up, SwipingDirection.Down),
+    blockedDirections: List<SwipingDirection> = listOf(SwipingDirection.Down),
 ) = pointerInput(Unit) {
     coroutineScope {
         detectDragGestures(

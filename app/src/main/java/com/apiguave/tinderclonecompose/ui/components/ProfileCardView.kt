@@ -23,8 +23,13 @@ import coil.compose.AsyncImage
 import com.apiguave.tinderclonecompose.domain.profilecard.entity.Profile
 
 @Composable
-fun ProfileCardView(profile: Profile, modifier: Modifier = Modifier, contentModifier: Modifier = Modifier){
-    var currentIndex by remember{ mutableStateOf(0) }
+fun ProfileCardView(
+    profile: Profile,
+    modifier: Modifier = Modifier,
+    contentModifier: Modifier = Modifier,
+    navigateToViewUserProfile: () -> Unit,
+){
+    var currentIndex by remember{ mutableIntStateOf(0) }
 
     val gradient = Brush.verticalGradient(
         colorStops = arrayOf(
@@ -86,13 +91,20 @@ fun ProfileCardView(profile: Profile, modifier: Modifier = Modifier, contentModi
                     Spacer(Modifier.width(8.dp))
                     Text(text = profile.age.toString(), color = Color.White, fontSize = 28.sp)
                     Spacer(modifier = Modifier.weight(1f))
-                    Icon(
-                        modifier = Modifier.size(28.dp),
-                        imageVector = Icons.Default.Info,
-                        tint = Color.White,
-                        contentDescription = null)
+                    Box(
+                        modifier = Modifier.clickable {
+                            println("Navigating to user profile...")
+                            navigateToViewUserProfile()
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(28.dp),
+                            imageVector = Icons.Default.Info,
+                            tint = Color.White,
+                            contentDescription = null
+                        )
+                    }
                 }
-
             }
         }
     }

@@ -7,4 +7,5 @@ import com.apiguave.tinderclonecompose.domain.profilecard.entity.ProfileList
 interface ProfileCardRepository {
     suspend fun swipeUser(profile: Profile, isLike: Boolean): NewMatch?
     suspend fun getProfiles(): ProfileList
+    suspend fun undoSwipe(swipeDirection: Int): Boolean
 }

@@ -1,5 +1,6 @@
 package com.apiguave.tinderclonecompose.data.repository
 
+import android.util.Log
 import com.apiguave.tinderclonecompose.data.datasource.FirestoreRemoteDataSource
 import com.apiguave.tinderclonecompose.data.datasource.StorageRemoteDataSource
 import com.apiguave.tinderclonecompose.data.datasource.model.FirestoreUser
@@ -19,9 +20,14 @@ class ProfileCardRepositoryImpl(
     private val firestoreDataSource: FirestoreRemoteDataSource
 ): ProfileCardRepository {
 
+    companion object {
+        private val TAG = "ProfileCardRepImpl"
+    }
 
     override suspend fun swipeUser(profile: Profile, isLike: Boolean): NewMatch? {
         val matchModel = firestoreDataSource.swipeUser(profile.id, isLike)
+        Log.d(TAG, "matchModel: $matchModel")
+
         return matchModel?.let { model ->
             NewMatch(model.id, profile.id, profile.name, profile.pictures)
         }
@@ -56,4 +62,7 @@ class ProfileCardRepositoryImpl(
         return userModel.toProfile(pictures.map { it.uri })
     }
 
+    override suspend fun undoSwipe(swipeDirection: Int): Boolean {
+        return firestoreDataSource.undoSwipe(swipeDirection)
+    }
 }

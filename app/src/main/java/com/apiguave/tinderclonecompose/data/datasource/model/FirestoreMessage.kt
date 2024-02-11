@@ -4,21 +4,27 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 
 data class FirestoreMessage(
+    val id: String="",
     val message: String="",
     val timestamp: Timestamp? = null,
-    val senderId: String=""
+    val senderId: String="",
+    val liked: Boolean = false
 )
 
 object FirestoreMessageProperties{
-    const val message = "message"
-    const val timestamp = "timestamp"
-    const val senderId = "senderId"
+    const val idKey = "id"
+    const val messageKey = "message"
+    const val timestampKey = "timestamp"
+    const val senderIdKey = "senderId"
+    const val likedKey = "liked"
 
-    fun toData(userId: String, text: String): Map<String, Any>{
+    fun toData(id: String, userId: String, text: String, liked: Boolean): Map<String, Any> {
         return mapOf(
-            message to text,
-            senderId to userId,
-            timestamp to FieldValue.serverTimestamp()
+            idKey to id,
+            messageKey to text,
+            senderIdKey to userId,
+            timestampKey to FieldValue.serverTimestamp(),
+            likedKey to liked
         )
     }
 }
