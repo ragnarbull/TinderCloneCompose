@@ -8,7 +8,21 @@
     <string name="personal_information">Personal Information</string>
     <string name="enter_your_name">Enter your name</string>
     <string name="birth_date">Birth Date</string>
-    <string name="about_me">About Me</string>
+
+    <string name="profile_height" translatable="false">Height</string>
+    <string name="profile_job_title" translatable="false">Job Title</string>
+    <string name="profile_languages" translatable="false">Languages</string>
+    <string name="profile_languages_i_know" translatable="false">Languages I Know</string>
+    <string name="profile_zodiac_sign" translatable="false">Zodiac Sign</string>
+    <string name="profile_what_is_your_zodiac_sign" translatable="false">What is your zodiac sign?</string>
+    <string name="profile_education" translatable="false">Education</string>
+    <string name="profile_what_is_your_education_level" translatable="false">What is your education level?</string>
+
+    <string name="profile_about_me" translatable="false">About Me</string>
+    <string name="profile_essentials" translatable="false">Essentials</string>
+    <string name="profile_basics" translatable="false">Basics</string>
+    <string name="profile_interests" translatable="false">Interests</string>
+
     <string name="write_something_interesting">Write something interesting…</string>
     <string name="gender">Gender</string>
     <string name="i_am_interested_in">I am interested in</string>

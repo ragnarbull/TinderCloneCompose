@@ -10,7 +10,6 @@ import com.apiguave.tinderclonecompose.domain.profile.ProfileRepository
 import com.apiguave.tinderclonecompose.domain.profile.entity.CreateUserProfile
 import com.apiguave.tinderclonecompose.domain.profilecard.entity.CurrentProfile
 import com.apiguave.tinderclonecompose.domain.profile.entity.FirebasePicture
-import com.apiguave.tinderclonecompose.domain.profile.entity.FullProfile
 import com.apiguave.tinderclonecompose.domain.profile.entity.UserLocation
 import com.apiguave.tinderclonecompose.domain.profile.entity.UserPicture
 
@@ -37,6 +36,12 @@ class ProfileRepositoryImpl(
             profile.maxDistance,
             profile.minAge,
             profile.maxAge,
+            profile.height,
+            profile.jobTitle,
+            profile.languages,
+            profile.zodiacSign,
+            profile.education,
+            profile.interests,
             filenames.map { it.filename }
         )
     }
@@ -46,33 +51,82 @@ class ProfileRepositoryImpl(
         newBio: String,
         newGenderIndex: Int,
         newOrientationIndex: Int,
+        newHeight: String,
+        newJobTitle: String,
+        newLanguages: String,
+        newZodiacSign: String,
+        newEducation: String,
+        newInterests: String,
         newPictures: List<UserPicture>
         ): CurrentProfile {
 
         val arePicturesEqual = currentProfile.pictures == newPictures
-        val isDataEqual = currentProfile.isDataEqual(newBio, newGenderIndex, newOrientationIndex)
+
+        val isDataEqual = currentProfile.isDataEqual(
+            newBio,
+            newGenderIndex,
+            newOrientationIndex,
+            newHeight,
+            newJobTitle,
+            newLanguages,
+            newZodiacSign,
+            newEducation,
+            newInterests
+        )
 
         if (arePicturesEqual && isDataEqual) {
             return currentProfile
         } else if (arePicturesEqual) {
-            val data = currentProfile.toModifiedData(newBio, newGenderIndex, newOrientationIndex)
+            val data = currentProfile.toModifiedData(
+                newBio,
+                newGenderIndex,
+                newOrientationIndex,
+                newHeight,
+                newJobTitle,
+                newLanguages,
+                newZodiacSign,
+                newEducation,
+                newInterests
+            )
             firestoreDataSource.updateProfileData(data)
             return currentProfile.toModifiedProfile(
                 newBio,
                 newGenderIndex,
-                newOrientationIndex
+                newOrientationIndex,
+                newHeight,
+                newJobTitle,
+                newLanguages,
+                newZodiacSign,
+                newEducation,
+                newInterests
             )
         } else if (isDataEqual) {
             val firebasePictures = updateProfilePictures(currentProfile.pictures, newPictures)
             return currentProfile.copy(pictures = firebasePictures)
         } else {
-            val data = currentProfile.toModifiedData(newBio, newGenderIndex, newOrientationIndex)
+            val data = currentProfile.toModifiedData(
+                newBio,
+                newGenderIndex,
+                newOrientationIndex,
+                newHeight,
+                newJobTitle,
+                newLanguages,
+                newZodiacSign,
+                newEducation,
+                newInterests
+            )
             val firebasePictures =
                 updateProfileDataAndPictures(data, currentProfile.pictures, newPictures)
             return currentProfile.toModifiedProfile(
                 newBio,
                 newGenderIndex,
                 newOrientationIndex,
+                newHeight,
+                newJobTitle,
+                newLanguages,
+                newZodiacSign,
+                newEducation,
+                newInterests,
                 firebasePictures
             )
         }
@@ -154,9 +208,5 @@ class ProfileRepositoryImpl(
         val user = firestoreDataSource.fetchCurrentUser()
         val picture = storageDataSource.getPictureFromUser(user.id, user.pictures.first())
         return picture.uri
-    }
-
-    override suspend fun getUserProfileById(userId: String): FullProfile {
-        return firestoreDataSource.getUserProfileById(userId)
     }
 }

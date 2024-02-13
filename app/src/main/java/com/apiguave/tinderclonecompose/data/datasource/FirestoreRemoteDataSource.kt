@@ -2,7 +2,6 @@ package com.apiguave.tinderclonecompose.data.datasource
 
 import android.app.Application
 import android.icu.util.Calendar
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import com.apiguave.tinderclonecompose.data.datasource.model.*
@@ -12,7 +11,6 @@ import com.apiguave.tinderclonecompose.domain.message.entity.Message
 import com.apiguave.tinderclonecompose.domain.profile.entity.Orientation
 import com.apiguave.tinderclonecompose.data.datasource.model.FirestoreUserList
 import com.apiguave.tinderclonecompose.domain.discoverysettingscard.entity.CurrentDiscoverySettings
-import com.apiguave.tinderclonecompose.domain.profile.entity.FullProfile
 import com.apiguave.tinderclonecompose.domain.profile.entity.UserLocation
 import com.apiguave.tinderclonecompose.extensions.getTaskResult
 import com.apiguave.tinderclonecompose.extensions.toTimestamp
@@ -213,6 +211,12 @@ class FirestoreRemoteDataSource(
         maxDistance: Int,
         minAge: Int,
         maxAge: Int,
+        height: String,
+        languages: String,
+        jobTitle: String,
+        zodiacSign: String,
+        education: String,
+        interests: String,
         pictures: List<String>
         ) {
         val user = FirestoreUser(
@@ -225,6 +229,12 @@ class FirestoreRemoteDataSource(
             maxDistance = maxDistance,
             minAge = minAge,
             maxAge = maxAge,
+            height = height,
+            languages = languages,
+            jobTitle = jobTitle,
+            zodiacSign = zodiacSign,
+            education = education,
+            interests = interests,
             liked = emptyList(),
             passed = emptyList(),
             pictures = pictures,
@@ -418,17 +428,6 @@ class FirestoreRemoteDataSource(
 
     suspend fun fetchCurrentUser(): FirestoreUser {
         return getFirestoreUserModel(currentUserId)
-    }
-
-    suspend fun getUserProfileById(userId: String): FullProfile {
-        val firestoreUser = getFirestoreUserModel(userId)
-        return FullProfile(
-            id = firestoreUser.id,
-            name = firestoreUser.name,
-            age = calculateAge(firestoreUser.birthDate),
-            pictures = firestoreUser.pictures.map { Uri.parse(it) },
-            bio = firestoreUser.bio
-        )
     }
 
     private fun calculateAge(birthDate: Timestamp?): Int {

@@ -56,6 +56,13 @@ fun SignUpView(
     var selectedGenderIndex by rememberSaveable { mutableStateOf(-1) }
     var selectedOrientationIndex by rememberSaveable { mutableStateOf(-1) }
 
+    var heightText by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+    var jobTitleText by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+    var languagesText by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+    var zodiacSignText by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+    var educationText by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+    var interestsText by rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+
     val isSignUpEnabled = remember { derivedStateOf { nameText.text.isValidUsername() && uiState.pictures.size > 1 && selectedGenderIndex >= 0 && selectedOrientationIndex >= 0 } }
     val coroutineScope = rememberCoroutineScope()
 
@@ -91,6 +98,12 @@ fun SignUpView(
                 maxDistance,
                 minAge,
                 maxAge,
+                heightText.text,
+                jobTitleText.text,
+                languagesText.text,
+                zodiacSignText.text,
+                educationText.text,
+                interestsText.text,
                 uiState.pictures.map { it.bitmap },
                 )
             //Signs up with the information provided
@@ -189,7 +202,7 @@ fun SignUpView(
                         }
                     }
 
-                    SectionTitle(title = stringResource(id = R.string.about_me) )
+                    SectionTitle(title = stringResource(id = R.string.profile_about_me) )
                     FormTextField(
                         modifier = Modifier.height(128.dp),
                         value = bioText,
@@ -207,6 +220,65 @@ fun SignUpView(
                         id = R.array.interests,
                         selectedIndex = selectedOrientationIndex,
                         onOptionClick = { selectedOrientationIndex = it })
+
+                    // Essentials
+                    SectionTitle(title = stringResource(id = R.string.profile_essentials))
+                    FormDivider()
+                    SectionTitle(title = stringResource(id = R.string.profile_height))
+                    FormTextField(
+                        value = heightText,
+                        placeholder = "Enter your height in ft"
+                    ) {
+                        heightText = it
+                    }
+                    FormDivider()
+                    SectionTitle(title = stringResource(id = R.string.profile_job_title))
+                    FormTextField(
+                        value = jobTitleText,
+                        placeholder = "Enter your job title"
+                    ) {
+                        jobTitleText = it
+                    }
+                    FormDivider()
+                    SectionTitle(title = stringResource(id = R.string.profile_languages))
+                    FormTextField(
+                        value = languagesText,
+                        placeholder = "Enter languages you know"
+                    ) {
+                        languagesText = it
+                    }
+                    FormDivider()
+
+                    // Basics
+                    SectionTitle(title = stringResource(id = R.string.profile_basics))
+                    FormDivider()
+                    SectionTitle(title = stringResource(id = R.string.profile_zodiac_sign))
+                    FormTextField(
+                        value = zodiacSignText,
+                        placeholder = "Enter your Zodiac sign"
+                    ) {
+                        zodiacSignText = it
+                    }
+                    FormDivider()
+                    SectionTitle(title = stringResource(id = R.string.profile_education))
+                    FormTextField(
+                        value = educationText,
+                        placeholder = "Enter your highest education"
+                    ) {
+                        educationText = it
+                    }
+                    FormDivider()
+
+                    // Interests
+                    SectionTitle(title = stringResource(id = R.string.profile_interests))
+                    FormDivider()
+                    FormTextField(
+                        value = interestsText,
+                        placeholder = "Enter your interests"
+                    ) {
+                        interestsText = it
+                    }
+                    FormDivider()
 
                     Spacer(
                         Modifier

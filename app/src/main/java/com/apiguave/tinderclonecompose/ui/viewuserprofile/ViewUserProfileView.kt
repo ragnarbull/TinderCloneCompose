@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,13 @@ fun ViewUserProfileView(
     userProfile: Profile,
     onArrowBackPressed: () -> Unit,
 ) {
+    val heightStr = userProfile.height.toIntOrNull()
+    val savedHeightInFeet = (heightStr?.div(100) ?: 0)
+    val savedHeightInInches = (heightStr?.rem(100) ?: 0)
+    var displayedHeightStr = ""
+    if (savedHeightInFeet != 0) {
+        displayedHeightStr = "${savedHeightInFeet}ft ${savedHeightInInches}in"
+    }
 
     Scaffold(
         topBar = {
@@ -43,6 +51,29 @@ fun ViewUserProfileView(
                     contentModifier = Modifier.padding(bottom = buttonRowHeightDp.plus(8.dp))
                 )
             }
+            Spacer(Modifier.weight(1f))
+            FullProfileBioCard(
+                title = stringResource(id = R.string.profile_about_me),
+                bio = userProfile.bio
+            )
+            Spacer(Modifier.weight(1f))
+            FullProfileEssentialsCard(
+                title = stringResource(id = R.string.profile_essentials),
+                height = displayedHeightStr,
+                jobTitle = userProfile.jobTitle,
+                languages = userProfile.languages
+            )
+            Spacer(Modifier.weight(1f))
+            FullProfileBasicsCard(
+                title = stringResource(id = R.string.profile_basics),
+                zodiacSign = userProfile.zodiacSign,
+                education = userProfile.education
+            )
+            Spacer(Modifier.weight(1f))
+            FullProfileInterestsCard(
+                title = stringResource(id = R.string.profile_interests),
+                interests = userProfile.interests
+            )
         }
     }
 }

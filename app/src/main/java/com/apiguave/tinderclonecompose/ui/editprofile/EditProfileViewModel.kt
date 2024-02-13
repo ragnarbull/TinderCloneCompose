@@ -33,12 +33,36 @@ class EditProfileViewModel(
         _uiState.update { it.copy(currentProfile = currentProfile, pictures = currentProfile.pictures) }
     }
 
-    fun updateProfile(currentProfile: CurrentProfile, uiBio: String, uiGenderIndex: Int, uiOrientationIndex: Int, uiPictures: List<UserPicture>){
+    fun updateProfile(
+        currentProfile: CurrentProfile,
+        uiBio: String,
+        uiGenderIndex: Int,
+        uiOrientationIndex: Int,
+        uiHeight: String,
+        uiJobTitle: String,
+        uiLanguages: String,
+        uiZodiacSign: String,
+        uiEducation: String,
+        uiInterests: String,
+        uiPictures: List<UserPicture>
+    ){
         viewModelScope.launch {
             //Otherwise show loading and perform update operations
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             try{
-                val updatedProfile = profileRepository.updateProfile(currentProfile, uiBio, uiGenderIndex, uiOrientationIndex, uiPictures)
+                val updatedProfile = profileRepository.updateProfile(
+                    currentProfile,
+                    uiBio,
+                    uiGenderIndex,
+                    uiOrientationIndex,
+                    uiHeight,
+                    uiJobTitle,
+                    uiLanguages,
+                    uiZodiacSign,
+                    uiEducation,
+                    uiInterests,
+                    uiPictures
+                )
                 _uiState.update { it.copy(isLoading = false, currentProfile = updatedProfile, pictures = updatedProfile.pictures) }
                 _action.emit(EditProfileAction.ON_PROFILE_EDITED)
             }catch (e: Exception){

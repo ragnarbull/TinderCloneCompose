@@ -9,4 +9,135 @@
         <item>Women</item>
         <item>Both</item>
     </string-array>
+    <string-array name="zodiac_signs">
+        <item>Aries</item>
+        <item>Taurus</item>
+        <item>Gemini</item>
+        <item>Cancer</item>
+        <item>Leo</item>
+        <item>Virgo</item>
+        <item>Libra</item>
+        <item>Scorpio</item>
+        <item>Sagittarius</item>
+        <item>Capricorn</item>
+        <item>Aquarius</item>
+        <item>Pisces</item>
+    </string-array>
+    <string-array name="languages">
+        <item>English</item>
+        <item>Spanish</item>
+        <item>French</item>
+        <item>German</item>
+        <item>Portuguese</item>
+        <item>Italian</item>
+        <item>Arabic</item>
+        <item>Japanese</item>
+        <item>Mandarin</item>
+        <item>Hindi</item>
+        <item>Russian</item>
+        <item>Turkish</item>
+        <item>Indonesian</item>
+        <item>Farsi</item>
+        <item>Dutch</item>
+        <item>Ukrainian</item>
+        <item>Polish</item>
+        <item>Greek</item>
+    </string-array>
+    <string-array name="education_levels">
+        <item>Bachelors</item>
+        <item>In College</item>
+        <item>High School</item>
+        <item>PhD</item>
+        <item>In Grad School</item>
+        <item>Masters</item>
+        <item>Trade School</item>
+    </string-array>
+    <string-array name="user_interests">
+        <item>Military</item>
+        <item>Shopping</item>
+        <item>History</item>
+        <item>Travel</item>
+        <item>Fashion</item>
+        <item>Tattoos</item>
+        <item>Antique Cars</item>
+        <item>Motorbikes</item>
+        <item>Star Wars</item>
+        <item>The Lord of the Rings</item>
+        <item>Horror Movies</item>
+        <item>Reading</item>
+        <item>Stephen King</item>
+        <item>Sci-Fi Movies</item>
+        <item>Mountains</item>
+        <item>Nature</item>
+        <item>Beach Trips</item>
+        <item>Fishing</item>
+        <item>Hunting</item>
+        <item>Farming</item>
+        <item>Finance</item>
+        <item>Entrepreneurship</item>
+        <item>Real Estate</item>
+        <item>Investing</item>
+        <item>Swimming</item>
+        <item>Gym</item>
+        <item>Running</item>
+        <item>Gym</item>
+        <item>Football</item>
+        <item>Cycling</item>
+        <item>Surfing</item>
+        <item>Archery</item>
+        <item>Dancing</item>
+        <item>Ballet</item>
+        <item>Art</item>
+        <item>Photography</item>
+        <item>Dogs</item>
+        <item>Cows</item>
+        <item>Cats</item>
+        <item>Britney Spears</item>
+        <item>Metal</item>
+        <item>Rock</item>
+        <item>Rap</item>
+        <item>Hip Hop</item>
+        <item>Taylor Swift</item>
+        <item>Discord</item>
+        <item>TikTok</item>
+        <item>Twitter</item>
+        <item>Instagram</item>
+        <item>Content Creator</item>
+        <item>Blogging</item>
+        <item>Only Fans</item>
+        <item>Snapchat</item>
+        <item>Programming</item>
+        <item>Fortnite</item>
+        <item>Battlefield</item>
+        <item>Halo</item>
+        <item>Xbox</item>
+        <item>Playstation</item>
+        <item>Playstation</item>
+        <item>Luxury</item>
+        <item>Yachts</item>
+        <item>High End Restaurants</item>
+        <item>Fine Wine</item>
+        <item>Cooking</item>
+        <item>Vegan</item>
+        <item>Vegetarian</item>
+        <item>Halal</item>
+        <item>Kosher</item>
+        <item>Foodie</item>
+        <item>Mental Health Awareness</item>
+        <item>Meditation</item>
+        <item>Political Activism</item>
+        <item>Feminism</item>
+        <item>Internet Privacy</item>
+        <item>Uighur Rights</item>
+        <item>Stand With Palestine</item>
+        <item>BLM</item>
+        <item>Slava Ukraine</item>
+        <item>Stop Oil</item>
+        <item>Socialism</item>
+        <item>Democrats</item>
+        <item>Liberal Politic</item>
+        <item>Climate Change</item>
+        <item>Trump</item>
+        <item>Republicans</item>
+    </string-array>
 </resources>
