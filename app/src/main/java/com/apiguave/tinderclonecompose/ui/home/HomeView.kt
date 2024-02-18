@@ -59,7 +59,15 @@ fun HomeView(
     ) {
 
     val TAG = "HomeView"
+    val btnInitialSize = 1f
+    val btnClickedSize = 1.4f
+    val btnDelayMs = 500L
     var lastSwipeDirection by remember { mutableIntStateOf(0) }
+    var undoSwipeBtnClicked by remember { mutableStateOf(false) }
+    var swipeLeftBtnClicked by remember { mutableStateOf(false) }
+    var superLikeBtnClicked by remember { mutableStateOf(false) }
+    var swipeRightBtnClicked by remember { mutableStateOf(false) }
+    var boostBtnClicked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = Unit, block = {
@@ -164,9 +172,30 @@ fun HomeView(
                                     state = swipeStates[index],
                                     onSwiped = { direction ->
                                         lastSwipeDirection = when (direction) {
-                                            SwipingDirection.Left -> 1 // Swiped left
-                                            SwipingDirection.Up -> 2 // Super like
-                                            SwipingDirection.Right -> 3 // Swiped right
+                                            SwipingDirection.Left -> {
+                                                scope.launch {
+                                                    swipeLeftBtnClicked = true
+                                                    delay(btnDelayMs)
+                                                    swipeLeftBtnClicked = false
+                                                }
+                                                1
+                                            } // Swiped left
+                                            SwipingDirection.Up -> {
+                                                scope.launch {
+                                                    superLikeBtnClicked = true
+                                                    delay(btnDelayMs)
+                                                    superLikeBtnClicked = false
+                                                }
+                                                2
+                                            } // Super like
+                                            SwipingDirection.Right -> {
+                                                scope.launch {
+                                                    swipeRightBtnClicked = true
+                                                    delay(btnDelayMs)
+                                                    swipeRightBtnClicked = false
+                                                }
+                                                3
+                                            } // Swiped right
                                             else -> 0 // Default to 0 if direction is not recognized
                                         }
                                         swipeUserAction(profile, lastSwipeDirection)
@@ -179,7 +208,6 @@ fun HomeView(
                                 navigateToViewUserProfile()
                             }
                         }
-                        // Undo swipe
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -192,78 +220,103 @@ fun HomeView(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Spacer(Modifier.weight(.5f))
-                            RoundGradientButton(
+                            // Undo swipe
+                            AnimatedRoundGradientButton(
                                 onClick = {
                                     scope.launch {
+                                        undoSwipeBtnClicked = true
                                         undoSwipe(lastSwipeDirection)
                                         lastSwipeDirection = 0 // reset to 0
+                                        delay(btnDelayMs)
+                                        undoSwipeBtnClicked = false
                                     }
                                 },
                                 enabled = swipeStates.isNotEmpty(),
-                                imageVector = Icons.Filled.KeyboardArrowLeft, color1 = Color.Yellow, color2 = Color.Yellow
+                                imageVector = Icons.Filled.KeyboardArrowLeft,
+                                color1 = Color.Yellow,
+                                color2 = Color.Yellow,
+                                size = if (!undoSwipeBtnClicked) btnInitialSize else btnClickedSize
                             )
                             Spacer(Modifier.weight(.5f))
                             // Swipe left
-                            RoundGradientButton(
+                            AnimatedRoundGradientButton(
                                 onClick = {
                                     scope.launch {
+                                        swipeLeftBtnClicked = true
                                         swipeStates.last().swipe(SwipingDirection.Left)
                                         val profile = uiState.profileList.last()
-                                        Log.d(TAG, "profile: $profile")
                                         lastSwipeDirection = 1
                                         swipeUserAction(profile, 1)
                                         removeLastProfile()
+                                        delay(btnDelayMs)
+                                        swipeLeftBtnClicked = false
                                     }
                                 },
                                 enabled = swipeStates.isNotEmpty(),
-                                imageVector = Icons.Filled.Close, color1 = Pink, color2 = Orange
+                                imageVector = Icons.Filled.Close,
+                                color1 = Pink,
+                                color2 = Orange,
+                                size = if (!swipeLeftBtnClicked) btnInitialSize else btnClickedSize
                             )
                             Spacer(Modifier.weight(.5f))
                             // Super like
-                            RoundGradientButton(
+                            AnimatedRoundGradientButton(
                                 onClick = {
                                     scope.launch {
+                                        superLikeBtnClicked = true
                                         swipeStates.last().swipe(SwipingDirection.Up)
                                         val profile = uiState.profileList.last()
                                         lastSwipeDirection = 2
                                         swipeUserAction(profile, 2)
                                         removeLastProfile()
                                         superLike()
+                                        delay(btnDelayMs)
+                                        superLikeBtnClicked = false
                                     }
                                 },
                                 enabled = swipeStates.isNotEmpty(),
-                                imageVector = Icons.Filled.Star, color1 = Color.Blue, color2 = Color.Blue
+                                imageVector = Icons.Filled.Star,
+                                color1 = Color.Blue,
+                                color2 = Color.Blue,
+                                size = if (!superLikeBtnClicked) btnInitialSize else btnClickedSize
                             )
                             Spacer(Modifier.weight(.5f))
                             // Swipe right
-                            RoundGradientButton(
+                            AnimatedRoundGradientButton(
                                 onClick = {
                                     scope.launch {
+                                        swipeRightBtnClicked = true
                                         swipeStates.last().swipe(SwipingDirection.Right)
                                         val profile = uiState.profileList.last()
-                                        Log.d(TAG, "profile: $profile")
                                         lastSwipeDirection = 3
                                         swipeUserAction(profile, 3)
                                         removeLastProfile()
+                                        delay(btnDelayMs)
+                                        swipeRightBtnClicked = false
                                     }
                                 },
                                 enabled = swipeStates.isNotEmpty(),
                                 imageVector = Icons.Filled.Favorite,
                                 color1 = Green1,
-                                color2 = Green2
+                                color2 = Green2,
+                                size = if (!swipeRightBtnClicked) btnInitialSize else btnClickedSize
                             )
                             Spacer(Modifier.weight(.5f))
                             // Boost
-                            RoundGradientButton(
+                            AnimatedRoundGradientButton(
                                 onClick = {
                                     scope.launch {
+                                        boostBtnClicked = true
                                         boost()
+                                        delay(btnDelayMs)
+                                        boostBtnClicked = false
                                     }
                                 },
                                 enabled = swipeStates.isNotEmpty(),
                                 imageVector = Icons.Filled.Refresh,
                                 color1 = Purple,
-                                color2 = Purple
+                                color2 = Purple,
+                                size = if (!boostBtnClicked) btnInitialSize else btnClickedSize
                             )
                             Spacer(Modifier.weight(.5f))
                         }

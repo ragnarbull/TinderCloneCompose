@@ -16,6 +16,7 @@ gen/
 # Local configuration file (sdk path, etc)
 local.properties
 app/google-services.json
+secrets.properties
                         
 # Windows thumbnail db
 Thumbs.db

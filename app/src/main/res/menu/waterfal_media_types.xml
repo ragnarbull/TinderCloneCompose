@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/typeGif" android:title="@string/gifs"/>
+    <item android:id="@+id/typeClips" android:title="@string/clips"/>
+    <item android:id="@+id/typeStickers" android:title="@string/stickers"/>
+    <item android:id="@+id/typeText" android:title="@string/text"/>
+    <item android:id="@+id/typeEmoji" android:title="@string/emoji"/>
+    <item android:id="@+id/typeRecents" android:title="@string/recents"/>
+</menu>

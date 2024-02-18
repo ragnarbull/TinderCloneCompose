@@ -1,5 +1,6 @@
 package com.apiguave.tinderclonecompose.data.datasource
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.icu.util.Calendar
 import android.util.Log
@@ -71,9 +72,16 @@ class FirestoreRemoteDataSource(
                 val messages = snapshot.toObjects(FirestoreMessage::class.java).map {
                     val id = it.id
                     val isSender = it.senderId == currentUserId
-                    val text = it.message
                     val liked = it.liked
-                    Message(id, text, isSender, liked)
+                    val text = it.message
+                    val giphyMediaId = it.giphyMediaId
+                    if (text != null) {
+                        // text message
+                        Message(id, isSender, liked, text, null)
+                    } else {
+                        // gif
+                        Message(id, isSender, liked, null, giphyMediaId)
+                    }
                 }
                 trySend(messages)
             }catch (e: Exception){
@@ -94,7 +102,7 @@ class FirestoreRemoteDataSource(
             .collection(MESSAGES)
             .document() // Automatically generates a unique ID for the message document
 
-        val data = FirestoreMessageProperties.toData(newMessageRef.id, currentUserId, text, false)
+        val data = FirestoreMessageProperties.toData(newMessageRef.id, currentUserId, false, text,null)
 
         coroutineScope {
             val newMessageResult = async {
@@ -112,6 +120,32 @@ class FirestoreRemoteDataSource(
         }
     }
 
+    suspend fun sendGiphyGif(matchId: String, giphyMediaId: String){
+        val newMessageRef = FirebaseFirestore.getInstance()
+            .collection(MATCHES)
+            .document(matchId)
+            .collection(MESSAGES)
+            .document() // Automatically generates a unique ID for the message document
+
+        val data = FirestoreMessageProperties.toData(newMessageRef.id, currentUserId, false, null, giphyMediaId)
+
+        coroutineScope {
+            val newMessageResult = async {
+                newMessageRef.set(data).getTaskResult()
+            }
+            val lastMessageResult = async {
+                FirebaseFirestore.getInstance()
+                    .collection(MATCHES)
+                    .document(matchId)
+                    .update(mapOf(FirestoreMatchProperties.lastMessage to "You sent a GIF"))// TODO: display the other user's name if they sent it
+                    .getTaskResult()
+            }
+            newMessageResult.await()
+            lastMessageResult.await()
+        }
+    }
+
+    @SuppressLint("LogNotTimber")
     suspend fun likeMessage(matchId: String, messageId: String) {
         try {
             val messageRef = FirebaseFirestore.getInstance()
@@ -121,13 +155,13 @@ class FirestoreRemoteDataSource(
                 .document(messageId)
 
             messageRef.update("liked", true).await()
-            Log.d(TAG, "Message liked successfully.")
         } catch (e: Exception) {
             Log.e(TAG, "Error liking message: $e")
             // Handle error appropriately
         }
     }
 
+    @SuppressLint("LogNotTimber")
     suspend fun unLikeMessage(matchId: String, messageId: String) {
         try {
             val messageRef = FirebaseFirestore.getInstance()
@@ -137,13 +171,13 @@ class FirestoreRemoteDataSource(
                 .document(messageId)
 
             messageRef.update("liked", false).await()
-            Log.d(TAG, "Message unliked successfully.")
         } catch (e: Exception) {
             Log.e(TAG, "Error unliking message: $e")
             // Handle error appropriately
         }
     }
 
+    @SuppressLint("LogNotTimber")
     suspend fun swipeUser(swipedUserId: String, isLike: Boolean): FirestoreMatch? {
         FirebaseFirestore.getInstance()
             .collection(USERS)
@@ -160,9 +194,8 @@ class FirestoreRemoteDataSource(
 
         val hasUserLikedBack = hasUserLikedBack(swipedUserId)
         if (hasUserLikedBack) {
-            Log.d(TAG, "User has liked back")
-
             val matchId = getMatchId(currentUserId, swipedUserId)
+            Log.d(TAG, "matchId $matchId")
             FieldValue.serverTimestamp()
             val data = FirestoreMatchProperties.toData(swipedUserId, currentUserId)
             FirebaseFirestore.getInstance()
@@ -178,7 +211,6 @@ class FirestoreRemoteDataSource(
                 .getTaskResult()
             return result.toObject(FirestoreMatch::class.java)
         } else {
-            Log.d(TAG, "User has not liked back")
             return null
         }
     }
@@ -242,6 +274,7 @@ class FirestoreRemoteDataSource(
         FirebaseFirestore.getInstance().collection(USERS).document(userId).set(user).getTaskResult()
     }
 
+    @SuppressLint("LogNotTimber")
     suspend fun getUserList(): FirestoreUserList {
         // Get current user information
         val currentUser = getFirestoreUserModel(currentUserId)
@@ -251,7 +284,7 @@ class FirestoreRemoteDataSource(
         val currentUserMaxDistance: Int = currentUser.maxDistance
         Log.d(TAG, "Current user: ${currentUser.name}, max distance: $currentUserMaxDistance km") // Log the current user's max distance
         val currentUserBirthDate: Date = currentUser.birthDate?.toDate() ?: throw IllegalArgumentException("User's birth date is null")
-        Log.d(TAG, "Current user: ${currentUser.name}, birthdate: $currentUserBirthDate") // Log the current user's birthdate
+//        Log.d(TAG, "Current user: ${currentUser.name}, birthdate: $currentUserBirthDate") // Log the current user's birthdate
 
         // Exclude the current user and user's already swiped on from the results
         val excludedUserIds = currentUser.liked + currentUser.passed + currentUserId
@@ -288,7 +321,7 @@ class FirestoreRemoteDataSource(
             val userLocation = user.location ?: throw FirestoreException("Couldn't find field 'location' for the user.")
             Log.d(TAG, "User: ${user.name}, location: $userLocation") // Log the user's location
             val userBirthDate: Date = user.birthDate?.toDate() ?: throw IllegalArgumentException("User's birth date is null")
-            Log.d(TAG, "User: ${user.name}, birthdate: $userBirthDate") // Log the user's birthdate
+//            Log.d(TAG, "User: ${user.name}, birthdate: $userBirthDate") // Log the user's birthdate
 
             // Check if the user's age range includes the current user's age range
             val userMinBirthDate = Calendar.getInstance().apply {
@@ -297,7 +330,7 @@ class FirestoreRemoteDataSource(
             val userMaxBirthDate = Calendar.getInstance().apply {
                 add(Calendar.YEAR, -currentUser.minAge)
             }.time
-            Log.d(TAG, "User: ${user.name}, min birthdate: $userMinBirthDate, max birthdate: $userMaxBirthDate") // Log the user's calculated age range
+//            Log.d(TAG, "User: ${user.name}, min birthdate: $userMinBirthDate, max birthdate: $userMaxBirthDate") // Log the user's calculated age range
 
             if (currentUserMaxBirthDate >= userMinBirthDate && currentUserMinBirthDate <= userMaxBirthDate) {
                 // Check orientation and exclude user if necessary
@@ -338,7 +371,6 @@ class FirestoreRemoteDataSource(
         return CurrentDiscoverySettings(maxDistance, minAge, maxAge)
     }
 
-
     suspend fun getSavedLocation(): UserLocation {
         val currentUser = getFirestoreUserModel(currentUserId)
         return currentUser.location ?: UserLocation(0.0000, 0.0000)
@@ -351,6 +383,7 @@ class FirestoreRemoteDataSource(
         return result.toObjects(FirestoreMatch::class.java)
     }
 
+    @SuppressLint("LogNotTimber")
     suspend fun getFirestoreUserModel(userId: String): FirestoreUser {
         try {
             val snapshot = FirebaseFirestore.getInstance().collection(USERS).document(userId).get().getTaskResult()
@@ -387,6 +420,7 @@ class FirestoreRemoteDataSource(
         return matchDocument.toObject<FirestoreMatch>()
     }
 
+    @SuppressLint("LogNotTimber")
     suspend fun undoSwipe(swipeDirection: Int): Boolean {
         val swipedRight = swipeDirection == 2 || swipeDirection == 3 // TODO: add logic for super like
         val fieldToUpdate = if (swipedRight) FirestoreUserProperties.liked else FirestoreUserProperties.passed
@@ -421,7 +455,7 @@ class FirestoreRemoteDataSource(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error undoing swipe: $e")
+            Log.e(TAG, "Error undoing swipe: ${e.message}")
         }
         return false // Undo swipe unsuccessful
     }

@@ -39,6 +39,10 @@ class MessageRepositoryImpl(
         firestoreDataSource.sendMessage(matchId, text)
     }
 
+    override suspend fun sendGiphyGif(matchId: String, giphyMediaId: String) {
+        firestoreDataSource.sendGiphyGif(matchId, giphyMediaId)
+    }
+
     override suspend fun likeMessage(matchId: String, messageId: String) {
         firestoreDataSource.likeMessage(matchId, messageId)
     }

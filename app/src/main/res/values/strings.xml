@@ -57,4 +57,34 @@
     <string name="max_distance" translatable="false">Maximum distance</string>
     <string name="age_range" translatable="false">Age range</string>
 
+    <string name="video_error" translatable="false">The clip is currently unavailable</string>
+    <string name="inline" translatable="false">Inline</string>
+    <string name="popup" translatable="false">Popup</string>
+    <string name="invalid_api_key" translatable="false">Invalid API Key!</string>
+    <string name="please_set_a_valid_api_key_before_running_the_project" translatable="false">Please set a valid API key before running the project!</string>
+    <string name="invalid_api_key_please_set_a_valid_api_key_before_running_the_project" translatable="false">Invalid API Key! Please set a valid API key before running the project!</string>
+    <string name="friday_15_23" translatable="false">Friday・15:23</string>
+    <string name="auto" translatable="false">Auto</string>
+    <string name="light" translatable="false">Light</string>
+    <string name="dark" translatable="false">Dark</string>
+    <string name="show_checkered_background_stickers" translatable="false">Show checkered background (stickers)</string>
+    <string name="change_rendition_type" translatable="false">Change Rendition Type</string>
+    <string name="for_grid" translatable="false">For Grid</string>
+    <string name="for_attribution" translatable="false">For Attribution</string>
+    <string name="show_confirmation_screen" translatable="false">Show confirmation screen</string>
+    <string name="show_attribution" translatable="false">Show attribution</string>
+    <string name="media_types" translatable="false">Media Types</string>
+    <string name="clips_playback_setting" translatable="false">Clips Playback Setting</string>
+    <string name="theme" translatable="false">Theme</string>
+    <string name="gifs" translatable="false">GIFs</string>
+    <string name="clips" translatable="false">Clips</string>
+    <string name="stickers" translatable="false">Stickers</string>
+    <string name="text" translatable="false">Text</string>
+    <string name="emoji" translatable="false">Emoji</string>
+    <string name="recents" translatable="false">Recents</string>
+    <string name="sound_button_off" translatable="false">Sound Button Off</string>
+    <string name="sound_button" translatable="false">Sound Button</string>
+    <string name="display_captions" translatable="false">Display Captions</string>
+    <string name="dismiss_button" translatable="false">Dismiss Button</string>
+    <string name="sound_icon" translatable="false">Sound Icon</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.apiguave.tinderclonecompose.ui.main
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +45,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("LogNotTimber")
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainContent(signInClient: GoogleSignInClient){
@@ -174,6 +176,10 @@ fun MainContent(signInClient: GoogleSignInClient){
                         newMatchViewModel.sendMessage(it)
                         navController.popBackStack()
                     },
+                    onGifSelected = {
+                        newMatchViewModel.onGifSelected(it)
+                        navController.popBackStack()
+                    },
                     onCloseClicked = navController::popBackStack
                 )
             }
@@ -219,8 +225,8 @@ fun MainContent(signInClient: GoogleSignInClient){
                         navigateToHomeView = {
                             navController.navigate(Routes.Home)
                         },
-                        updateDiscoverySettings = discoverySettingsViewModel::updateDiscoverySettings,
-                        action = discoverySettingsViewModel.action
+                        updateDiscoverySettings = viewModel::updateDiscoverySettings,
+                        action = viewModel.action
                     )
                 } ?: run {
                     if (discoverySettings == null) LoadingView()
@@ -272,7 +278,8 @@ fun MainContent(signInClient: GoogleSignInClient){
                         onArrowBackPressed = navController::popBackStack,
                         sendMessage = viewModel::sendMessage,
                         likeMessage = viewModel::likeMessage,
-                        unLikeMessage = viewModel::unLikeMessage
+                        unLikeMessage = viewModel::unLikeMessage,
+                        onGifSelected = viewModel::onGifSelected
                     )
                 } ?: run {
                     if (matchId != null) LoadingView()

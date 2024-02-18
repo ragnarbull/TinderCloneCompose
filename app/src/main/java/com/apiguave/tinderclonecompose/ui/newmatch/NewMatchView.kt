@@ -1,7 +1,6 @@
 package com.apiguave.tinderclonecompose.ui.newmatch
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
@@ -37,19 +36,20 @@ import com.apiguave.tinderclonecompose.R
 import com.apiguave.tinderclonecompose.domain.profilecard.entity.NewMatch
 import com.apiguave.tinderclonecompose.ui.components.ChatFooter
 import com.apiguave.tinderclonecompose.ui.theme.Green1
+import com.giphy.sdk.core.models.Media
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NewMatchView(
     match: NewMatch?,
     onSendMessage: (String) -> Unit,
+    onGifSelected: (Media) -> Unit,
     onCloseClicked: () -> Unit
 ){
     val interactionSource = remember { MutableInteractionSource() }
 
     match?.let { matchModel ->
         Box {
-            var currentIndex by remember{ mutableStateOf(0) }
+            var currentIndex by remember{ mutableIntStateOf(0) }
             var isTextVisible by remember { mutableStateOf(false) }
             var isFirstTime by remember { mutableStateOf(true) }
 
@@ -162,8 +162,9 @@ fun NewMatchView(
                 }
 
                 ChatFooter(
-                    modifier = Modifier.align(Alignment.BottomCenter),
+                    onGifSelected = onGifSelected,
                     onSendClicked = onSendMessage,
+                    modifier = Modifier.align(Alignment.BottomCenter),
                     shape = RoundedCornerShape(6.dp)
                 )
 

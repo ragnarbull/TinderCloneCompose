@@ -11,6 +11,8 @@ interface MessageRepository {
 
     suspend fun sendMessage(matchId: String, text: String)
 
+    suspend fun sendGiphyGif(matchId: String, giphyMediaId: String)
+
     suspend fun likeMessage(matchId: String, messageId: String)
 
     suspend fun unLikeMessage(matchId: String, messageId: String)

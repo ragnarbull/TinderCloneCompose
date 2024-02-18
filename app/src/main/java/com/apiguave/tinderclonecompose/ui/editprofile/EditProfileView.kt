@@ -253,7 +253,6 @@ fun EditProfileView(
                         onDismiss = { showHeightDialog = false },
                         onSave = { selectedHeight ->
                             heightText = TextFieldValue(selectedHeight)
-                            Log.d(TAG, "heightText: $heightText")
                             showHeightDialog = false
                         }
                     )
@@ -293,9 +292,7 @@ fun EditProfileView(
                                     ""
                                 }
                             )
-                            Log.d(TAG, "languagesText: $languagesText")
                             selectedLanguages = selectedLanguagesList.toMutableList()
-                            Log.d(TAG, "selectedLanguages: $selectedLanguages")
                             showLanguagesDialog = false
                         }
                     )
@@ -322,7 +319,6 @@ fun EditProfileView(
                         onDismiss = { showZodiacSignDialog = false },
                         onSave = { selectedZodiacSign ->
                             zodiacSignText = TextFieldValue(selectedZodiacSign)
-                            Log.d(TAG, "zodiacSignText: $zodiacSignText")
                             showZodiacSignDialog = false
                         }
                     )
@@ -345,7 +341,6 @@ fun EditProfileView(
                         onDismiss = { showEducationLevelDialog = false },
                         onSave = { selectedEducationLevel ->
                             educationLevelText = TextFieldValue(selectedEducationLevel)
-                            Log.d(TAG, "educationLevelText: $educationLevelText")
                             showEducationLevelDialog = false
                         }
                     )
@@ -376,9 +371,7 @@ fun EditProfileView(
                                     ""
                                 }
                             )
-                            Log.d(TAG, "interestsText: $interestsText")
                             selectedInterests = selectedInterestsList.toMutableList()
-                            Log.d(TAG, "selectedInterests: $selectedInterests")
                             showInterestsDialog = false
                         }
                     )
@@ -402,10 +395,7 @@ fun EditProfileView(
         }
     }
 
-
     if(uiState.isLoading){
         LoadingView()
     }
 }
-
-
